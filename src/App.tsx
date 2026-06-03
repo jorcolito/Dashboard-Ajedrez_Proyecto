@@ -6,11 +6,13 @@ import './App.css'
 import { Grid } from '@mui/material';
 import HeaderUI from './components/HeaderUI';
 import AlertUI from './components/AlertUI';
+import FilterUI from './components/FilterUI';
 
 function App() {
   return (
     <>
       <HeaderUI />
+      <FilterUI />
     </>
   );
 }
