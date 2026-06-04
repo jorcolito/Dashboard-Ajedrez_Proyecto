@@ -30,6 +30,17 @@ export default function FilterUI() {
                         </TextField>
                     </Grid>
 
+                    <Grid size={{xs: 12, md: 4}}>
+                        <TextField select fullWidth label = "Tiempos de Juego">
+                            <MenuItem value = "bullet">Bullet</MenuItem>
+                            <MenuItem value = "blitz">Blitz</MenuItem>
+                            <MenuItem value = "rapid">Rapid</MenuItem>
+                            <MenuItem value = "classical">Clásica</MenuItem>
+                        </TextField>
+                    </Grid>
+
+
+
 
                 </Grid>
             </CardContent>
