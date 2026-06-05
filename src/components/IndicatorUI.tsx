@@ -4,6 +4,7 @@ interface IndicatorUIProps {
     title: string;
     value: string | number;
     description: string;
+    icon?: React.ReactNode;
 }
 
 export default function IndicatorUI({ title, value, description }: IndicatorUIProps) {
