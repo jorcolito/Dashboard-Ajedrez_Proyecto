@@ -9,6 +9,7 @@ import AlertUI from './components/AlertUI';
 import FilterUI from './components/FilterUI'
 import IndicatorUI from './components/IndicatorUI';
 import games from "./data/games.json";
+import WinnerChartUI from './components/WinnerChartUI';
 
 type Game = {
   winner: "white" | "black" | "draw";
@@ -51,6 +52,10 @@ function App() {
 
         <Grid size={{xs: 12, md: 2.4}}>
           <IndicatorUI title="Rating Promedio" value={averageRatingFormatted} description="Rating promedio de los jugadores analizados" />
+        </Grid>
+
+        <Grid size={{xs: 12, md: 2.4}}>
+          <WinnerChartUI />
         </Grid>
 
       </Grid>
