@@ -13,22 +13,26 @@ import WinnerChartUI from "./components/WinnerChartUI";
 import { useState } from "react";
 import type { Game, WinnerFilter, VictoryStatusFilter } from "./types/Game";
 
-
 function App() {
   const gameData = games as Game[];
   const [winnerFilter, setWinnerFilter] = useState<WinnerFilter>("");
-  const [victoryStatusFilter, setVictoryStatusFilter] = useState<VictoryStatusFilter>("");
+  const [victoryStatusFilter, setVictoryStatusFilter] =
+    useState<VictoryStatusFilter>("");
 
   const filteredGames = gameData.filter((game) => {
-  const matchesWinner =
-    winnerFilter === "" || game.winner === winnerFilter;
+    const matchesWinner = winnerFilter === "" || game.winner === winnerFilter;
 
-  const matchesVictoryStatus =
-    victoryStatusFilter === "" ||
-    game.victory_status === victoryStatusFilter;
+    const matchesVictoryStatus =
+      victoryStatusFilter === "" || game.victory_status === victoryStatusFilter;
 
-  return matchesWinner && matchesVictoryStatus;
-});
+    return matchesWinner && matchesVictoryStatus;
+  });
+  const winnerChartGames = gameData.filter((game) => {
+    const matchesVictoryStatus =
+      victoryStatusFilter === "" || game.victory_status === victoryStatusFilter;
+
+    return matchesVictoryStatus;
+  });
   const totalGames = filteredGames.length;
   const whiteWins = filteredGames.filter(
     (game) => game.winner === "white",
@@ -37,6 +41,19 @@ function App() {
     (game) => game.winner === "black",
   ).length;
   const draws = filteredGames.filter((game) => game.winner === "draw").length;
+    // hechos especialmente para el grafico circular, se filtran las partidas sin importar el ganador, pero si se toma en cuenta el tipo de victoria para que el grafico se actualice al cambiar ese filtro
+  const chartWhiteWins = winnerChartGames.filter(
+    (game) => game.winner === "white",
+  ).length;
+
+  const chartBlackWins = winnerChartGames.filter(
+    (game) => game.winner === "black",
+  ).length;
+
+  const chartDraws = winnerChartGames.filter(
+    (game) => game.winner === "draw",
+  ).length;
+
   const averageRating =
     filteredGames.length === 0
       ? 0
@@ -46,9 +63,9 @@ function App() {
         (filteredGames.length * 2);
 
   const winnerChartData = [
-    { name: "Blancas", value: whiteWins },
-    { name: "Negras", value: blackWins },
-    { name: "Empates", value: draws },
+    { name: "Blancas", value: chartWhiteWins },
+    { name: "Negras", value: chartBlackWins },
+    { name: "Empates", value: chartDraws },
   ];
 
   return (
