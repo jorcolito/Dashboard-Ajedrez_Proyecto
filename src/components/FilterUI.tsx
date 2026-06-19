@@ -6,15 +6,17 @@ import {
   MenuItem,
   Button,
 } from "@mui/material";
-import type { WinnerFilter, VictoryStatusFilter, RatedFilter} from "../types/Game";
+import type { WinnerFilter, VictoryStatusFilter, RatedFilter, TimeControlFilter} from "../types/Game";
 
 interface FilterUIProps {
   winnerFilter: WinnerFilter;
   victoryStatusFilter: VictoryStatusFilter;
   ratedFilter: RatedFilter;
+  timeControlFilter: TimeControlFilter;
   onRatedChange: (value: RatedFilter) => void;
   onWinnerChange: (value: WinnerFilter) => void;
   onVictoryStatusChange: (value: VictoryStatusFilter) => void;
+  onTimeControlChange: (value: TimeControlFilter) => void;
   onClearFilters: () => void;
 }
 
@@ -22,9 +24,11 @@ export default function FilterUI({
   winnerFilter,
   victoryStatusFilter,
   ratedFilter,
+  timeControlFilter,
   onRatedChange,
   onWinnerChange,
   onVictoryStatusChange,
+  onTimeControlChange,
   onClearFilters,
 }: FilterUIProps) {
   return (
@@ -86,7 +90,17 @@ export default function FilterUI({
           </Grid>
 
           <Grid size={{ xs: 12, md: 2.4 }}>
-            <TextField select fullWidth label="Tiempo de Juego">
+            <TextField
+              select
+              fullWidth
+              label="Tiempo de Juego"
+              value={timeControlFilter}
+              onChange={(event) => {
+                const value = event.target.value as TimeControlFilter;
+                onTimeControlChange(value);
+              }}
+            >
+              <MenuItem value="">Todos</MenuItem>
               <MenuItem value="bullet">Bullet</MenuItem>
               <MenuItem value="blitz">Blitz</MenuItem>
               <MenuItem value="rapid">Rapid</MenuItem>

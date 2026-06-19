@@ -6,40 +6,103 @@ import IndicatorUI from "./components/IndicatorUI";
 import games from "./data/games.json";
 import WinnerChartUI from "./components/WinnerChartUI";
 import { useState } from "react";
-import type { Game, WinnerFilter, VictoryStatusFilter, RatedFilter } from "./types/Game";
+import type {
+  Game,
+  WinnerFilter,
+  VictoryStatusFilter,
+  RatedFilter,
+  TimeControl,
+  TimeControlFilter,
+} from "./types/Game";
+
+function getTimeControl(incrementCode: string): TimeControl {
+  const [baseText, incrementText] = incrementCode.split("+");
+
+  const baseMinutes = Number(baseText);
+  const incrementSeconds = Number(incrementText);
+
+  const estimatedSeconds = baseMinutes * 60 + incrementSeconds * 40;
+
+  if (estimatedSeconds < 180) {
+    return "bullet";
+  }
+
+  if (estimatedSeconds < 480) {
+    return "blitz";
+  }
+
+  if (estimatedSeconds < 1500) {
+    return "rapid";
+  }
+
+  return "classical";
+}
 
 function App() {
   const gameData = games as Game[];
+
   const [winnerFilter, setWinnerFilter] = useState<WinnerFilter>("");
+
   const [victoryStatusFilter, setVictoryStatusFilter] =
     useState<VictoryStatusFilter>("");
+
   const [ratedFilter, setRatedFilter] = useState<RatedFilter>("");
+
+  const [timeControlFilter, setTimeControlFilter] =
+    useState<TimeControlFilter>("");
+
   const filteredGames = gameData.filter((game) => {
-    const matchesWinner = winnerFilter === "" || game.winner === winnerFilter;
+    const matchesWinner =
+      winnerFilter === "" || game.winner === winnerFilter;
 
     const matchesVictoryStatus =
-      victoryStatusFilter === "" || game.victory_status === victoryStatusFilter;
+      victoryStatusFilter === "" ||
+      game.victory_status === victoryStatusFilter;
 
     const matchesRated =
       ratedFilter === "" || game.rated.toLowerCase() === ratedFilter;
 
-    return matchesWinner && matchesVictoryStatus && matchesRated;
+    const matchesTimeControl =
+      timeControlFilter === "" ||
+      getTimeControl(game.increment_code) === timeControlFilter;
+
+    return (
+      matchesWinner &&
+      matchesVictoryStatus &&
+      matchesRated &&
+      matchesTimeControl
+    );
   });
+
   const winnerChartGames = gameData.filter((game) => {
     const matchesVictoryStatus =
-      victoryStatusFilter === "" || game.victory_status === victoryStatusFilter;
+      victoryStatusFilter === "" ||
+      game.victory_status === victoryStatusFilter;
 
-    return matchesVictoryStatus;
+    const matchesRated =
+      ratedFilter === "" || game.rated.toLowerCase() === ratedFilter;
+
+    const matchesTimeControl =
+      timeControlFilter === "" ||
+      getTimeControl(game.increment_code) === timeControlFilter;
+
+    return matchesVictoryStatus && matchesRated && matchesTimeControl;
   });
+
   const totalGames = filteredGames.length;
+
   const whiteWins = filteredGames.filter(
     (game) => game.winner === "white",
   ).length;
+
   const blackWins = filteredGames.filter(
     (game) => game.winner === "black",
   ).length;
-  const draws = filteredGames.filter((game) => game.winner === "draw").length;
-  // hechos especialmente para el grafico circular, se filtran las partidas sin importar el ganador, pero si se toma en cuenta el tipo de victoria para que el grafico se actualice al cambiar ese filtro
+
+  const draws = filteredGames.filter(
+    (game) => game.winner === "draw",
+  ).length;
+
   const chartWhiteWins = winnerChartGames.filter(
     (game) => game.winner === "white",
   ).length;
@@ -71,19 +134,24 @@ function App() {
   return (
     <>
       <HeaderUI />
+
       <FilterUI
         winnerFilter={winnerFilter}
         victoryStatusFilter={victoryStatusFilter}
         ratedFilter={ratedFilter}
+        timeControlFilter={timeControlFilter}
         onWinnerChange={setWinnerFilter}
         onVictoryStatusChange={setVictoryStatusFilter}
         onRatedChange={setRatedFilter}
+        onTimeControlChange={setTimeControlFilter}
         onClearFilters={() => {
           setWinnerFilter("");
           setVictoryStatusFilter("");
           setRatedFilter("");
+          setTimeControlFilter("");
         }}
       />
+
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, md: 2.4 }}>
           <IndicatorUI
@@ -132,4 +200,5 @@ function App() {
     </>
   );
 }
+
 export default App;

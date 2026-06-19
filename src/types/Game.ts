@@ -17,3 +17,10 @@ export type Game = {
 
 export type WinnerFilter = "" | Game["winner"];
 export type VictoryStatusFilter = "" | Game["victory_status"];
+export type RatedFilter = "" | "true" | "false";
+
+// ya que directamente no existen tipos de tiempo estilo bullet blitz rapid, se creara una ufncion auxiliar
+// para poder hacer que los 10+5 o 3+0 se clasifiquen como bullet, blitz o rapid segun corresponda, y asi poder filtrar por tiempo de juego en el componente de filtros
+// 10+5 significa que la partida dura 10 minutos y cada jugador recibe un incremento de 5 segundos por jugada, 3+0 significa que la partida dura 3 minutos sin incremento, etc.
+export type TimeControl = "bullet" | "blitz" | "rapid" | "classical";
+export type TimeControlFilter = "" | TimeControl;
