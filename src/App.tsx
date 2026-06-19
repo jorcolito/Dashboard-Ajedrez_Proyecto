@@ -1,31 +1,29 @@
-// import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from './assets/vite.svg'
-// import heroImg from './assets/hero.png'
 import "./App.css";
 import { Grid } from "@mui/material";
 import HeaderUI from "./components/HeaderUI";
-// import AlertUI from './components/AlertUI';
 import FilterUI from "./components/FilterUI";
 import IndicatorUI from "./components/IndicatorUI";
 import games from "./data/games.json";
 import WinnerChartUI from "./components/WinnerChartUI";
 import { useState } from "react";
-import type { Game, WinnerFilter, VictoryStatusFilter } from "./types/Game";
+import type { Game, WinnerFilter, VictoryStatusFilter, RatedFilter } from "./types/Game";
 
 function App() {
   const gameData = games as Game[];
   const [winnerFilter, setWinnerFilter] = useState<WinnerFilter>("");
   const [victoryStatusFilter, setVictoryStatusFilter] =
     useState<VictoryStatusFilter>("");
-
+  const [ratedFilter, setRatedFilter] = useState<RatedFilter>("");
   const filteredGames = gameData.filter((game) => {
     const matchesWinner = winnerFilter === "" || game.winner === winnerFilter;
 
     const matchesVictoryStatus =
       victoryStatusFilter === "" || game.victory_status === victoryStatusFilter;
 
-    return matchesWinner && matchesVictoryStatus;
+    const matchesRated =
+      ratedFilter === "" || game.rated.toLowerCase() === ratedFilter;
+
+    return matchesWinner && matchesVictoryStatus && matchesRated;
   });
   const winnerChartGames = gameData.filter((game) => {
     const matchesVictoryStatus =
@@ -41,7 +39,7 @@ function App() {
     (game) => game.winner === "black",
   ).length;
   const draws = filteredGames.filter((game) => game.winner === "draw").length;
-    // hechos especialmente para el grafico circular, se filtran las partidas sin importar el ganador, pero si se toma en cuenta el tipo de victoria para que el grafico se actualice al cambiar ese filtro
+  // hechos especialmente para el grafico circular, se filtran las partidas sin importar el ganador, pero si se toma en cuenta el tipo de victoria para que el grafico se actualice al cambiar ese filtro
   const chartWhiteWins = winnerChartGames.filter(
     (game) => game.winner === "white",
   ).length;
@@ -57,10 +55,12 @@ function App() {
   const averageRating =
     filteredGames.length === 0
       ? 0
-      : filteredGames.reduce((sum, game) => {
-          return sum + game.white_rating + game.black_rating;
-        }, 0) /
-        (filteredGames.length * 2);
+      : Math.round(
+          filteredGames.reduce((sum, game) => {
+            return sum + game.white_rating + game.black_rating;
+          }, 0) /
+            (filteredGames.length * 2),
+        );
 
   const winnerChartData = [
     { name: "Blancas", value: chartWhiteWins },
@@ -74,11 +74,14 @@ function App() {
       <FilterUI
         winnerFilter={winnerFilter}
         victoryStatusFilter={victoryStatusFilter}
+        ratedFilter={ratedFilter}
         onWinnerChange={setWinnerFilter}
         onVictoryStatusChange={setVictoryStatusFilter}
+        onRatedChange={setRatedFilter}
         onClearFilters={() => {
           setWinnerFilter("");
           setVictoryStatusFilter("");
+          setRatedFilter("");
         }}
       />
       <Grid container spacing={2}>
@@ -118,7 +121,7 @@ function App() {
           <IndicatorUI
             title="Rating Promedio"
             value={averageRating}
-            description="Rating promedio de los jugadores analizados"
+            description="ELO promedio de los jugadores analizados"
           />
         </Grid>
 
