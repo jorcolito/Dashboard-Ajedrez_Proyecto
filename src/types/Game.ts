@@ -14,3 +14,6 @@ export type Game = {
     opening_ply: number;
     moves: string;
 };
+
+export type WinnerFilter = "" | Game["winner"];
+export type VictoryStatusFilter = "" | Game["victory_status"];

@@ -11,18 +11,24 @@ import IndicatorUI from "./components/IndicatorUI";
 import games from "./data/games.json";
 import WinnerChartUI from "./components/WinnerChartUI";
 import { useState } from "react";
-import type { Game } from "./types/Game";
+import type { Game, WinnerFilter, VictoryStatusFilter } from "./types/Game";
 
 
 function App() {
   const gameData = games as Game[];
-  const [winnerFilter, setWinnerFilter] = useState("");
+  const [winnerFilter, setWinnerFilter] = useState<WinnerFilter>("");
+  const [victoryStatusFilter, setVictoryStatusFilter] = useState<VictoryStatusFilter>("");
+
   const filteredGames = gameData.filter((game) => {
-    if (winnerFilter === "") {
-      return true;
-    }
-    return game.winner === winnerFilter;
-  });
+  const matchesWinner =
+    winnerFilter === "" || game.winner === winnerFilter;
+
+  const matchesVictoryStatus =
+    victoryStatusFilter === "" ||
+    game.victory_status === victoryStatusFilter;
+
+  return matchesWinner && matchesVictoryStatus;
+});
   const totalGames = filteredGames.length;
   const whiteWins = filteredGames.filter(
     (game) => game.winner === "white",
@@ -50,8 +56,13 @@ function App() {
       <HeaderUI />
       <FilterUI
         winnerFilter={winnerFilter}
+        victoryStatusFilter={victoryStatusFilter}
         onWinnerChange={setWinnerFilter}
-        onClearFilters={() => setWinnerFilter("")}
+        onVictoryStatusChange={setVictoryStatusFilter}
+        onClearFilters={() => {
+          setWinnerFilter("");
+          setVictoryStatusFilter("");
+        }}
       />
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, md: 2.4 }}>
