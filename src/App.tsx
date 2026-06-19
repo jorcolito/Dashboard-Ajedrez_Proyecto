@@ -6,6 +6,7 @@ import IndicatorUI from "./components/IndicatorUI";
 import games from "./data/games.json";
 import WinnerChartUI from "./components/WinnerChartUI";
 import { useState } from "react";
+import TopOpeningsChartUI from "./components/TopOpeningsChartUI";
 import type {
   Game,
   WinnerFilter,
@@ -36,6 +37,10 @@ function getTimeControl(incrementCode: string): TimeControl {
   }
 
   return "classical";
+}
+
+function getOpeningFamily(openingName: string): string {
+  return openingName.split(":")[0].split("|")[0].trim();
 }
 
 function App() {
@@ -131,6 +136,31 @@ function App() {
     { name: "Empates", value: chartDraws },
   ];
 
+  {
+    /*
+    openingCounts crea un objeto y el topOpeningsData lo convierte en un array
+    */
+  }
+  const openingCounts = filteredGames.reduce((acc,game) => {
+    const opening = getOpeningFamily(game.opening_name);
+
+    acc[opening] = (acc[opening] || 0)+1;
+
+    return acc;
+  }, {} as Record<string, number>);
+
+  const topOpeningsData = Object.entries(openingCounts)
+  .map(([name,count]) => ({
+    name,
+    count,
+    percentage:
+      filteredGames.length=== 0
+      ? 0
+      : Number (((count / filteredGames.length) * 100).toFixed(2)),
+  }))
+  .sort((a,b) => b.count -a.count)
+  .slice(0,10);
+
   return (
     <>
       <HeaderUI />
@@ -193,8 +223,11 @@ function App() {
           />
         </Grid>
 
-        <Grid size={{ xs: 12, md: 2.4 }}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <WinnerChartUI data={winnerChartData} />
+        </Grid>
+        <Grid size={{ xs: 12, md: 8 }}>
+          <TopOpeningsChartUI data={topOpeningsData} />
         </Grid>
       </Grid>
     </>
