@@ -11,12 +11,8 @@ import IndicatorUI from "./components/IndicatorUI";
 import games from "./data/games.json";
 import WinnerChartUI from "./components/WinnerChartUI";
 import { useState } from "react";
+import type { Game } from "./types/Game";
 
-type Game = {
-  winner: "white" | "black" | "draw";
-  white_rating: number;
-  black_rating: number;
-};
 
 function App() {
   const gameData = games as Game[];
