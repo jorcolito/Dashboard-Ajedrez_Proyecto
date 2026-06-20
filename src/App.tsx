@@ -172,16 +172,23 @@ function App() {
     return acc;
   }, {} as Record<string, { name: string; total: number; wins: number }>);
 
-  const bestOpeningsData = Object.values(openingPerformance)
-    .filter((opening) => opening.total >= 20)
-    .map((opening) => ({
-      name: opening.name,
-      total: opening.total,
-      wins: opening.wins,
-      winRate: Number(((opening.wins / opening.total) * 100).toFixed(2)),
-    }))
-    .sort((a, b) => b.winRate - a.winRate)
-    .slice(0, 10);
+ const minimumOpeningGames =
+  openingPerformanceGames.length < 50
+    ? 1
+    : openingPerformanceGames.length < 200
+      ? 2
+      : 5;
+
+const bestOpeningsData = Object.values(openingPerformance)
+  .filter((opening) => opening.total >= minimumOpeningGames)
+  .map((opening) => ({
+    name: opening.name,
+    total: opening.total,
+    wins: opening.wins,
+    winRate: Number(((opening.wins / opening.total) * 100).toFixed(2)),
+  }))
+  .sort((a, b) => b.winRate - a.winRate)
+  .slice(0, 10);
 
   const timeControlCounts = filteredGames.reduce((acc, game) => {
     acc[game.increment_code] = (acc[game.increment_code] || 0) + 1;
@@ -360,6 +367,11 @@ function App() {
           <TurnsDistributionChartUI games={filteredGames} />
         </Grid>
       </Grid>
+      <footer className="dashboard-footer">
+        <span>Dashboard de Análisis de Partidas de Ajedrez</span>
+        <span>React · TypeScript · Material UI · Recharts</span>
+        <span>Dataset: Lichess Online Chess Games</span>
+      </footer>
     </div>
   );
 }

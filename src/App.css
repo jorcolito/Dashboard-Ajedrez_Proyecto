@@ -965,3 +965,29 @@ body::after {
   color: #a8afc3 !important;
   max-width: 320px;
 }
+
+.dashboard-footer {
+  margin-top: 34px;
+  padding: 18px 0 8px;
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  color: #7f8798;
+  font-size: 0.85rem;
+  border-top: 1px solid rgba(214, 179, 95, 0.1);
+}
+
+.dashboard-footer span:first-child {
+  color: #d6b35f;
+  font-weight: 800;
+}
+
+@media (max-width: 600px) {
+  .dashboard-footer {
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-align: center;
+  }
+}
