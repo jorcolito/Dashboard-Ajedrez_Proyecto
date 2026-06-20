@@ -10,6 +10,8 @@ import TopOpeningsChartUI from "./components/TopOpeningsChartUI";
 import BestOpeningsChartUI from "./components/BestOpeningsChartUI";
 import MoveAnalysisByTurnUI from "./components/MoveAnalysisByTurnUI";
 import TurnsDistributionChartUI from "./components/TurnsDistributionChartUI";
+import InsightPanelUI from "./components/InsightPanelUI";
+import SectionTitleUI from "./components/SectionTitleUI";
 
 import games from "./data/games.json";
 
@@ -18,6 +20,10 @@ import {
   FaChessKing,
   FaHandshake,
   FaChartBar,
+  FaChessKnight,
+  FaClock,
+  FaTrophy,
+  FaFire,
 } from "react-icons/fa";
 
 import type {
@@ -177,6 +183,65 @@ function App() {
     .sort((a, b) => b.winRate - a.winRate)
     .slice(0, 10);
 
+  const timeControlCounts = filteredGames.reduce((acc, game) => {
+    acc[game.increment_code] = (acc[game.increment_code] || 0) + 1;
+
+    return acc;
+  }, {} as Record<string, number>);
+
+  const mostUsedTimeControl = Object.entries(timeControlCounts).sort(
+    (a, b) => b[1] - a[1],
+  )[0];
+
+  const longestGameTurns =
+    filteredGames.length === 0
+      ? 0
+      : Math.max(...filteredGames.map((game) => game.turns));
+
+  const topOpening = topOpeningsData[0];
+
+  const dominantWinnerData = [
+    { name: "Blancas", value: whiteWins },
+    { name: "Negras", value: blackWins },
+    { name: "Empates", value: draws },
+  ].sort((a, b) => b.value - a.value)[0];
+
+  const dominantWinnerPercentage =
+    totalGames === 0
+      ? 0
+      : Number(((dominantWinnerData.value / totalGames) * 100).toFixed(1));
+
+  const insightCards = [
+    {
+      title: "Apertura dominante",
+      value: topOpening ? topOpening.name : "Sin datos",
+      description: topOpening
+        ? `${topOpening.percentage}% de las partidas filtradas`
+        : "No hay partidas filtradas",
+      icon: <FaChessKnight />,
+    },
+    {
+      title: "Control más usado",
+      value: mostUsedTimeControl ? mostUsedTimeControl[0] : "Sin datos",
+      description: mostUsedTimeControl
+        ? `${mostUsedTimeControl[1]} partidas con este ritmo`
+        : "No hay partidas filtradas",
+      icon: <FaClock />,
+    },
+    {
+      title: "Partida más larga",
+      value: longestGameTurns,
+      description: "movimientos individuales registrados",
+      icon: <FaTrophy />,
+    },
+    {
+      title: "Resultado dominante",
+      value: dominantWinnerData.name,
+      description: `${dominantWinnerPercentage}% dentro del filtro actual`,
+      icon: <FaFire />,
+    },
+  ];
+
   return (
     <div className="app-shell">
       <HeaderUI />
@@ -202,6 +267,14 @@ function App() {
       </div>
 
       <Grid container spacing={3} className="dashboard-grid">
+        <Grid size={{ xs: 12 }}>
+          <SectionTitleUI
+            eyebrow="Resumen"
+            title="Resumen general del dataset"
+            description="Indicadores principales calculados según los filtros activos."
+          />
+        </Grid>
+
         <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2.4 }}>
           <IndicatorUI
             title="Total de Partidas"
@@ -244,6 +317,26 @@ function App() {
             value={averageRating}
             description="ELO promedio de los jugadores analizados"
             icon={<FaChartBar />}
+          />
+        </Grid>
+
+        <Grid size={{ xs: 12 }}>
+          <SectionTitleUI
+            eyebrow="Insights"
+            title="Lectura inteligente de las partidas"
+            description="Conclusiones automáticas generadas a partir de las partidas filtradas."
+          />
+        </Grid>
+
+        <Grid size={{ xs: 12 }}>
+          <InsightPanelUI insights={insightCards} />
+        </Grid>
+
+        <Grid size={{ xs: 12 }}>
+          <SectionTitleUI
+            eyebrow="Análisis visual"
+            title="Resultados, aperturas y movimientos"
+            description="Visualizaciones comparativas para comprender patrones de juego dentro del dataset."
           />
         </Grid>
 

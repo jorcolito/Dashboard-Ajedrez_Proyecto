@@ -8,7 +8,7 @@ import {
   CartesianGrid,
   LabelList,
 } from "recharts";
-import { Card, CardContent, Typography } from "@mui/material";
+import { Box, Card, CardContent, Typography } from "@mui/material";
 
 interface BestOpeningData {
   name: string;
@@ -24,25 +24,29 @@ interface BestOpeningsChartUIProps {
 export default function BestOpeningsChartUI({
   data,
 }: BestOpeningsChartUIProps) {
+  const hasResults = data.some((item) => item.winRate > 0);
+
   return (
-    <Card>
+    <Card className="compact-chart-card">
       <CardContent>
         <Typography variant="h6" gutterBottom>
           Aperturas con mejores resultados
         </Typography>
 
-        {data.length === 0 ? (
-          <Typography variant="body2">
-            No hay suficientes datos para calcular resultados.
-          </Typography>
+        {!hasResults ? (
+          <Box className="compact-empty-state">
+            <Typography variant="body2">
+              Selecciona Blancas o Negras para calcular mejores resultados.
+            </Typography>
+          </Box>
         ) : (
-          <ResponsiveContainer width="100%" height={320}>
+          <ResponsiveContainer width="100%" height={240}>
             <BarChart
               data={data}
               layout="vertical"
-              margin={{ top: 12, right: 44, left: 90, bottom: 12 }}
+              margin={{ top: 8, right: 42, left: 95, bottom: 8 }}
             >
-              <CartesianGrid strokeDasharray="3 3" opacity={0.18} />
+              <CartesianGrid strokeDasharray="3 3" opacity={0.16} />
 
               <XAxis
                 type="number"
@@ -53,26 +57,20 @@ export default function BestOpeningsChartUI({
               <YAxis
                 type="category"
                 dataKey="name"
-                width={130}
-                tick={{ fontSize: 12 }}
+                width={95}
+                tick={{ fontSize: 11 }}
               />
 
               <Tooltip
-                formatter={(value, name) => {
-                  if (name === "winRate") {
-                    return [`${value}%`, "Porcentaje de victoria"];
-                  }
-
-                  return [value, name];
-                }}
+                formatter={(value) => [`${value}%`, "Porcentaje"]}
                 labelFormatter={(label) => `Apertura: ${label}`}
               />
 
               <Bar
                 dataKey="winRate"
-                name="winRate"
                 fill="#6aa84f"
                 radius={[0, 8, 8, 0]}
+                barSize={18}
               >
                 <LabelList
                   dataKey="winRate"
