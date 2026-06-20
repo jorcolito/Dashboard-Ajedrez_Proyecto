@@ -9,6 +9,7 @@ import { useState } from "react";
 import TopOpeningsChartUI from "./components/TopOpeningsChartUI";
 import BestOpeningsChartUI from "./components/BestOpeningsChartUI";
 import MoveAnalysisByTurnUI from "./components/MoveAnalysisByTurnUI";
+import TurnsDistributionChartUI from "./components/TurnsDistributionChartUI";
 
 import type {
   Game,
@@ -291,6 +292,17 @@ const bestOpeningsData = Object.values(openingPerformance)
         </Grid>
         <Grid size={{ xs: 12, md: 8 }}>
           <MoveAnalysisByTurnUI games={filteredGames} />
+        </Grid>
+        <Grid size={{ xs: 12, md: 6 }}>
+          <BestOpeningsChartUI data={bestOpeningsData} />
+        </Grid>
+
+        <Grid size={{ xs: 12, md: 6 }}>
+          <MoveAnalysisByTurnUI games={filteredGames} />
+        </Grid>
+
+        <Grid size={{ xs: 12, md: 6 }}>
+          <TurnsDistributionChartUI games={filteredGames} />
         </Grid>
       </Grid>
     </>
