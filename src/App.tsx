@@ -8,6 +8,7 @@ import WinnerChartUI from "./components/WinnerChartUI";
 import { useState } from "react";
 import TopOpeningsChartUI from "./components/TopOpeningsChartUI";
 import BestOpeningsChartUI from "./components/BestOpeningsChartUI";
+import MoveAnalysisByTurnUI from "./components/MoveAnalysisByTurnUI";
 
 import type {
   Game,
@@ -48,6 +49,17 @@ function getOpeningFamily(openingName: string): string {
 function App() {
   const gameData = games as Game[];
 
+  const timeControlOptions = Object.entries(
+  gameData.reduce((acc, game) => {
+    acc[game.increment_code] = (acc[game.increment_code] || 0) + 1;
+
+    return acc;
+  }, {} as Record<string, number>),
+)
+  .sort((a, b) => b[1] - a[1])
+  .slice(0, 20)
+  .map(([incrementCode]) => incrementCode);
+
   const [winnerFilter, setWinnerFilter] = useState<WinnerFilter>("");
 
   const [victoryStatusFilter, setVictoryStatusFilter] =
@@ -71,7 +83,7 @@ function App() {
 
     const matchesTimeControl =
       timeControlFilter === "" ||
-      getTimeControl(game.increment_code) === timeControlFilter;
+      game.increment_code === timeControlFilter;
 
     return (
       matchesWinner &&
@@ -220,6 +232,7 @@ const bestOpeningsData = Object.values(openingPerformance)
         victoryStatusFilter={victoryStatusFilter}
         ratedFilter={ratedFilter}
         timeControlFilter={timeControlFilter}
+        timeControlOptions={timeControlOptions}
         onWinnerChange={setWinnerFilter}
         onVictoryStatusChange={setVictoryStatusFilter}
         onRatedChange={setRatedFilter}
@@ -281,6 +294,9 @@ const bestOpeningsData = Object.values(openingPerformance)
         </Grid>
         <Grid size={{ xs: 12, md: 8 }}>
           <BestOpeningsChartUI data={bestOpeningsData} />
+        </Grid>
+        <Grid size={{ xs: 12, md: 8 }}>
+          <MoveAnalysisByTurnUI games={filteredGames} />
         </Grid>
       </Grid>
     </>

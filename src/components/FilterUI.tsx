@@ -13,6 +13,7 @@ interface FilterUIProps {
   victoryStatusFilter: VictoryStatusFilter;
   ratedFilter: RatedFilter;
   timeControlFilter: TimeControlFilter;
+  timeControlOptions: string[];
   onRatedChange: (value: RatedFilter) => void;
   onWinnerChange: (value: WinnerFilter) => void;
   onVictoryStatusChange: (value: VictoryStatusFilter) => void;
@@ -25,6 +26,8 @@ export default function FilterUI({
   victoryStatusFilter,
   ratedFilter,
   timeControlFilter,
+  timeControlOptions,
+
   onRatedChange,
   onWinnerChange,
   onVictoryStatusChange,
@@ -101,10 +104,11 @@ export default function FilterUI({
               }}
             >
               <MenuItem value="">Todos</MenuItem>
-              <MenuItem value="bullet">Bullet</MenuItem>
-              <MenuItem value="blitz">Blitz</MenuItem>
-              <MenuItem value="rapid">Rapid</MenuItem>
-              <MenuItem value="classical">Clásica</MenuItem>
+              {timeControlOptions.map((timeControl) => (
+                <MenuItem key={timeControl} value={timeControl}>
+                  {timeControl}
+                </MenuItem>
+))}
             </TextField>
           </Grid>
 
