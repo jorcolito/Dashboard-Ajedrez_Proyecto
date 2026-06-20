@@ -103,7 +103,7 @@ function App() {
 
     const matchesTimeControl =
       timeControlFilter === "" ||
-      getTimeControl(game.increment_code) === timeControlFilter;
+      game.increment_code === timeControlFilter;
 
     return matchesVictoryStatus && matchesRated && matchesTimeControl;
   });
@@ -137,17 +137,11 @@ function App() {
     (game) => game.winner === "draw",
   ).length;
 
-  const chartWhiteWins = winnerChartGames.filter(
-    (game) => game.winner === "white",
-  ).length;
+    const chartWhiteWins = whiteWins;
 
-  const chartBlackWins = winnerChartGames.filter(
-    (game) => game.winner === "black",
-  ).length;
+    const chartBlackWins = blackWins;
 
-  const chartDraws = winnerChartGames.filter(
-    (game) => game.winner === "draw",
-  ).length;
+    const chartDraws = draws;
 
   const averageRating =
     filteredGames.length === 0

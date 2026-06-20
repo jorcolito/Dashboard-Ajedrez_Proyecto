@@ -1,40 +1,98 @@
-import { PieChart, Pie, Tooltip, Cell, Legend } from "recharts";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  LabelList,
+} from "recharts";
+import { Card, CardContent, Typography } from "@mui/material";
 
+interface WinnerChartData {
+  name: string;
+  value: number;
+}
 
 interface WinnerChartUIProps {
-    data: { name: string; value: number }[];
+  data: WinnerChartData[];
 }
 
-const COLORS = ["#D4AF37", "#555555", "#C9C9C9"];
 export default function WinnerChartUI({ data }: WinnerChartUIProps) {
-    return (
-        <PieChart width={350} height={300}>
-            <Pie                        // grafico circular para mostrar la distribucion de victorias entre blancas, negras y empates
-                data={data}             // se le pasa el arreglo de datos con el nombre y valor de cada categoria
-                dataKey="value"         // se le indica que el valor a graficar es el campo "value" de cada objeto
-                nameKey="name"          // se le indica que el nombre de cada categoria es el campo "name" de cada objeto
-                cx="50%"                // se le indica que el centro del grafico esta en el 50% del ancho del contenedor
-                cy="50%"                // se le indica que el centro del grafico esta en el 50% de la altura del contenedor
-                outerRadius={90}        // se le indica que el radio exterior del grafico es de 90 pixeles
-                label                   // se le indica que se muestren las etiquetas con el nombre de cada categoria
+  const total = data.reduce((sum, item) => sum + item.value, 0);
+
+  const chartData = data.map((item) => ({
+    ...item,
+    percentage:
+      total === 0 ? 0 : Number(((item.value / total) * 100).toFixed(2)),
+  }));
+
+  return (
+    <Card>
+      <CardContent>
+        <Typography variant="h6" gutterBottom>
+          Distribución de ganadores
+        </Typography>
+
+        {total === 0 ? (
+          <Typography variant="body2">
+            No hay partidas para los filtros seleccionados.
+          </Typography>
+        ) : (
+          <ResponsiveContainer width="100%" height={260}>
+            <BarChart
+              data={chartData}
+              layout="vertical"
+              margin={{ top: 12, right: 44, left: 40, bottom: 12 }}
             >
+              <CartesianGrid strokeDasharray="3 3" opacity={0.18} />
 
-                {/* se recorre cada elemento del arreglo
-                por cada elemento de data, indez se le asigna un color, 0- blancas, 1- negras, 2- empates */}
-                {data.map((_, index) => (
-                    <Cell
-                        key={index}
-                        fill={COLORS[index]}
-                    />
-                ))}
-            </Pie>
-            <Tooltip />   {/* se le indica que se muestre una tooltip al pasar el mouse por encima de cada sector del grafico */}
-            <Legend />    {/* se le indica que se muestre una leyenda con el nombre de cada categoria y su color */}
-        </PieChart>
-    );
+              <XAxis
+                type="number"
+                domain={[0, 100]}
+                tickFormatter={(value) => `${value}%`}
+              />
+
+              <YAxis
+                type="category"
+                dataKey="name"
+                width={80}
+                tick={{ fontSize: 12 }}
+              />
+
+              <Tooltip
+                formatter={(value, name) => {
+                  if (name === "percentage") {
+                    return [`${value}%`, "Porcentaje"];
+                  }
+
+                  return [value, name];
+                }}
+              />
+
+              <Bar
+                dataKey="percentage"
+                name="percentage"
+                fill="#d6b35f"
+                radius={[0, 8, 8, 0]}
+              >
+                <LabelList
+                  dataKey="percentage"
+                  position="right"
+                  formatter={(value) => {
+                    if (typeof value === "number") {
+                      return `${value}%`;
+                    }
+
+                    return "";
+                  }}
+                />
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        )}
+      </CardContent>
+    </Card>
+  );
 }
-
-/**
- * Se instalo npm install recharts para que se pueda usar el componente de grafico circular
- * 
- */
