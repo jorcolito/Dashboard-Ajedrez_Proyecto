@@ -7,6 +7,8 @@ import games from "./data/games.json";
 import WinnerChartUI from "./components/WinnerChartUI";
 import { useState } from "react";
 import TopOpeningsChartUI from "./components/TopOpeningsChartUI";
+import BestOpeningsChartUI from "./components/BestOpeningsChartUI";
+
 import type {
   Game,
   WinnerFilter,
@@ -94,6 +96,21 @@ function App() {
     return matchesVictoryStatus && matchesRated && matchesTimeControl;
   });
 
+  const openingPerformanceGames = gameData.filter((game) => {
+  const matchesVictoryStatus =
+    victoryStatusFilter === "" ||
+    game.victory_status === victoryStatusFilter;
+
+  const matchesRated =
+    ratedFilter === "" || game.rated.toLowerCase() === ratedFilter;
+
+  const matchesTimeControl =
+    timeControlFilter === "" ||
+    getTimeControl(game.increment_code) === timeControlFilter;
+
+  return matchesVictoryStatus && matchesRated && matchesTimeControl;
+});
+
   const totalGames = filteredGames.length;
 
   const whiteWins = filteredGames.filter(
@@ -160,6 +177,39 @@ function App() {
   }))
   .sort((a,b) => b.count -a.count)
   .slice(0,10);
+
+  const openingPerformance = openingPerformanceGames.reduce((acc, game) => {
+  const opening = getOpeningFamily(game.opening_name);
+
+  if (!acc[opening]) {
+    acc[opening] = {
+      name: opening,
+      total: 0,
+      wins: 0,
+    };
+  }
+
+  acc[opening].total += 1;
+
+  const isWin = winnerFilter !== "" && game.winner === winnerFilter;
+
+  if (isWin) {
+    acc[opening].wins += 1;
+  }
+
+  return acc;
+}, {} as Record<string, { name: string; total: number; wins: number }>);
+
+const bestOpeningsData = Object.values(openingPerformance)
+  .filter((opening) => opening.total >= 20)
+  .map((opening) => ({
+    name: opening.name,
+    total: opening.total,
+    wins: opening.wins,
+    winRate: Number(((opening.wins / opening.total) * 100).toFixed(2)),
+  }))
+  .sort((a, b) => b.winRate - a.winRate)
+  .slice(0, 10);
 
   return (
     <>
@@ -228,6 +278,9 @@ function App() {
         </Grid>
         <Grid size={{ xs: 12, md: 8 }}>
           <TopOpeningsChartUI data={topOpeningsData} />
+        </Grid>
+        <Grid size={{ xs: 12, md: 8 }}>
+          <BestOpeningsChartUI data={bestOpeningsData} />
         </Grid>
       </Grid>
     </>
